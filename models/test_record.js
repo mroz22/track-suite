@@ -7,6 +7,7 @@ const TestRecordSchema = new mongoose.Schema({
   branch: {
     type: String,
   },
+  stage: [String],
   records: {
     type: mongoose.Schema.Types.Mixed,
   },

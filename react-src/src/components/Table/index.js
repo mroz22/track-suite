@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import { Select } from 'semantic-ui-react'
 
 const DIMENSION_UNIT = 25;
-const DIMENSION_RATIO = 5;
+const DIMENSION_RATIO = 6;
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  margin-top: 20px;
 `
 
 const Cell = styled.div`
@@ -26,6 +28,7 @@ const HorizontalHeaderCel = styled(Cell)`
   writing-mode:vertical-rl;
   width: ${DIMENSION_UNIT}px;
   height: ${DIMENSION_UNIT * DIMENSION_RATIO}px;
+  text-overflow: ellipsis;
   overflow: hidden;
   margin-bottom: 8px;
 `;
@@ -34,6 +37,7 @@ const VerticalHeaderCel = styled(Cell)`
   width: ${DIMENSION_UNIT * DIMENSION_RATIO}px;
   height: ${DIMENSION_UNIT}px;
   text-align: right;
+  text-overflow: ellipsis;
 `;
 
 const CornerHeaderCel = styled.div`
@@ -58,9 +62,15 @@ const Table = ({data}) => {
 
   const testNames = [];
   const testRuns = [];
+  const branches = [];
+
+  const [branch, setBranch] = useState('');
 
   data.forEach(record => {
-    Object.entries(record.record).forEach(([name, value]) => {
+    if (!branches.includes(record.branch)) {
+      branches.push(record.branch);
+    }
+    Object.entries(record.records).forEach(([name, value]) => {
       if (!testNames.includes(name)) {
         testNames.push(name);
       }
@@ -83,7 +93,7 @@ const Table = ({data}) => {
     const idIndex = testRuns.findIndex(t => t === record._id);
 
     testNames.forEach((testName, nameIndex) => {
-      const recordForTestName = Object.entries(record.record).find(([name, value]) => {
+      const recordForTestName = Object.entries(record.records).find(([name, value]) => {
         return name === testName;
       });
       if (recordForTestName) {
@@ -100,7 +110,10 @@ const Table = ({data}) => {
   console.log('testRuns', testRuns);
   
   return (
-    <Wrapper>
+    <React.Fragment>
+      <Select onChange={(e, { value }) => setBranch(value)} placeholder='Select branch' options={branches.map(b => ({key: b, value: b, text: b}))} />
+      <Wrapper>
+
       {
         matrix.map((row, i) => (
           <Row key={i}>
@@ -119,7 +132,9 @@ const Table = ({data}) => {
           </Row>
         ))
       }
-    </Wrapper>
+      </Wrapper>
+
+    </React.Fragment>
   )
 }
 
