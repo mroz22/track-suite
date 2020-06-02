@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Select, Button } from 'semantic-ui-react'
+import { Select, Button, Divider, Header, Icon } from 'semantic-ui-react'
 
 const DIMENSION_UNIT = 25;
 const DIMENSION_RATIO = 8;
@@ -142,9 +142,19 @@ const Table = ({data, dropDataFn}) => {
 
   return (
     <React.Fragment>
+      <div>
+
       <Select onChange={(e, { value }) => setBranch(value)} placeholder='Select branch' options={branches.map(b => ({key: b, value: b, text: b}))} />
       <Select onChange={(e, { value }) => setStage(value)} placeholder='Select stage' options={stages.map(b => ({key: b, value: b, text: b}))} />
       <Button negative onClick={() => dropDataFn()}>Drop data</Button>
+      </div>
+
+      <Divider horizontal>
+        <Header as='h4'>
+          <Icon name='tag' />
+          Tracks
+        </Header>
+      </Divider>
 
       <Wrapper>
       {
