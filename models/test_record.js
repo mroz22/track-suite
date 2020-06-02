@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 
 const TestRecordSchema = new mongoose.Schema({
-  // project: {
-  //   type: String,
-  //   required: [true, 'project is required.'],
-  // },
-  jobUrl: String,
+  jobUrl: {
+    type: String,
+  },
+  branch: {
+    type: String,
+  },
   records: {
     type: mongoose.Schema.Types.Mixed,
   },

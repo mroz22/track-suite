@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const DIMENSION_UNIT = 25;
+const DIMENSION_RATIO = 5;
 
 const Wrapper = styled.div`
   display: flex;
@@ -24,20 +25,20 @@ const Row = styled.div`
 const HorizontalHeaderCel = styled(Cell)`
   writing-mode:vertical-rl;
   width: ${DIMENSION_UNIT}px;
-  height: ${DIMENSION_UNIT * 4}px;
+  height: ${DIMENSION_UNIT * DIMENSION_RATIO}px;
   overflow: hidden;
   margin-bottom: 8px;
 `;
 
 const VerticalHeaderCel = styled(Cell)`
-  width: ${DIMENSION_UNIT * 4}px;
+  width: ${DIMENSION_UNIT * DIMENSION_RATIO}px;
   height: ${DIMENSION_UNIT}px;
   text-align: right;
 `;
 
 const CornerHeaderCel = styled.div`
-  width: ${DIMENSION_UNIT * 4}px;;
-  height: ${DIMENSION_UNIT * 4}px;;
+  width: ${DIMENSION_UNIT * DIMENSION_RATIO}px;;
+  height: ${DIMENSION_UNIT * DIMENSION_RATIO}px;;
 `;
 
 const Box = styled.div`
