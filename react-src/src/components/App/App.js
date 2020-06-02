@@ -54,13 +54,13 @@ const App = () => {
         </div>
       </div>
       <Container>
-        {!loading && data && data.length && (
+        {!loading && (
           <Table
           data={data}
           dropDataFn={dropData}
         />
         )}
-        {(!data || !data.length)  && !loading && (
+        {(!data || !data.length) && !loading && (
           <Container textAlign="center">
             <Header>No data here :( You may still enjoy these crunchy fried frog legs</Header>
             <img src={legs} />
