@@ -1,3 +1,3 @@
 module.exports = {
-  db: process.env.DB || 'mongodb://localhost/track-suite'
+  db: process.env.MONGODB_URI || 'mongodb://localhost/track-suite'
 };
