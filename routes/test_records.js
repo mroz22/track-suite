@@ -43,7 +43,7 @@ router.get('/', (req, res) => {
 router.post('/', postLimiter, (req, res) => {
   console.log('post', req.body);
   // Validate the age
-  let newRecord = new TestRecord({ record: req.body});
+  let newRecord = new TestRecord(req.body);
   console.log(newRecord);
 
   newRecord.save()
