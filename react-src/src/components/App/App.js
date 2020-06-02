@@ -11,19 +11,32 @@ const App = () => {
   const server = process.env.REACT_APP_API_URL || '';
   const [data, setData] = useState([]);
 
-  useEffect(() => {
-    const fetchData = () => {
-      axios.get(`${server}/api/test-records/`)
-      .then((response) => {
-        console.log(response);
-        setData(response.data);
+  const fetchData = () => {
+    axios.get(`${server}/api/test-records/`)
+    .then((response) => {
+      console.log(response);
+      setData(response.data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }
+  
+  const dropData = () => {
+    console.log('dropdata cliccked');
+    axios.delete(`${server}/api/test-records/`)
+      .then(() => {
+        setData([]);
       })
       .catch((err) => {
         console.log(err);
       });
-    }
+  }
+
+  useEffect(() => {
     fetchData();
   }, [])
+  
   
 
   return (
@@ -37,6 +50,7 @@ const App = () => {
       <Container>
         <Table
           data={data}
+          dropDataFn={dropData}
         />
       </Container>
       <br/>

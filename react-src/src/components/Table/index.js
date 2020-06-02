@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Select } from 'semantic-ui-react'
+import { Select, Button } from 'semantic-ui-react'
 
 const DIMENSION_UNIT = 25;
-const DIMENSION_RATIO = 6;
+const DIMENSION_RATIO = 8;
 
 const Wrapper = styled.div`
   display: flex;
@@ -31,7 +31,6 @@ const HorizontalHeaderCel = styled(Cell)`
   text-overflow: ellipsis;
   overflow: hidden;
   margin-bottom: 8px;
-  cursor: pointer;
 `;
 
 const VerticalHeaderCel = styled(Cell)`
@@ -59,7 +58,9 @@ const Box = styled.div`
   }};
 `;
 
-const Table = ({data}) => {
+const Table = ({data, dropDataFn}) => {
+
+  if (!data || data.length === 0) return null;
 
   const testNames = [];
   const testRuns = [];
@@ -73,13 +74,29 @@ const Table = ({data}) => {
     if (!branches.includes(record.branch)) {
       branches.push(record.branch);
     }
-    if (record.stages) {
-      record.stages.forEach(stage => {
+    if (record.stage) {
+      record.stage.forEach(stage => {
         if (!stages.includes(stage)) {
           stages.push(stage);
         }
       })
     }
+  })
+
+  const filteredData = data.filter(record => {
+      if (stage && record.stage) {
+        return record.stage.includes(stage);
+      }
+      return true;
+    })
+    .filter(record => {
+      if (branch && record.branch) {
+        return record.branch === branch;
+      }
+      return true;
+    })
+
+  filteredData.forEach(record => {
     Object.entries(record.records).forEach(([name, value]) => {
       if (!testNames.includes(name)) {
         testNames.push(name);
@@ -89,7 +106,7 @@ const Table = ({data}) => {
       }
     });
   })
-
+    
   const matrix = [
     [undefined, ...testRuns],
     ...testNames.map((name, i) => {
@@ -99,19 +116,7 @@ const Table = ({data}) => {
     })
   ];
 
-  data
-  .filter(record => {
-    if (stage && record.stages) {
-      return record.stages.includes(stage);
-    }
-    return true;
-  })
-  .filter(record => {
-    if (branch && record.branch) {
-      return record.branch === branch;
-    }
-    return true;
-  })
+  filteredData
   .forEach(record => {
     const idIndex = testRuns.findIndex(t => t === record._id);
 
@@ -128,14 +133,10 @@ const Table = ({data}) => {
     });
   });
 
-  console.log('matrix',  matrix)
-  console.log('testNames', testNames);
-  console.log('testRuns', testRuns);
-  
-  const redirectToJob = (id) => {
+  const getJobUrlById = (id) => {
     const record = data.find(r => r._id === id);
     if (record && record.jobUrl) {
-      window.location = record.jobUrl;
+      return record.jobUrl;
     }
   }
 
@@ -143,15 +144,9 @@ const Table = ({data}) => {
     <React.Fragment>
       <Select onChange={(e, { value }) => setBranch(value)} placeholder='Select branch' options={branches.map(b => ({key: b, value: b, text: b}))} />
       <Select onChange={(e, { value }) => setStage(value)} placeholder='Select stage' options={stages.map(b => ({key: b, value: b, text: b}))} />
-      
-      <div>
-        {branch}
-      </div>
-      <div>
-        {stage}
-      </div>
-      <Wrapper>
+      <Button negative onClick={() => dropDataFn()}>Drop data</Button>
 
+      <Wrapper>
       {
         matrix.map((row, i) => (
           <Row key={i}>
@@ -160,7 +155,11 @@ const Table = ({data}) => {
                 return <CornerHeaderCel key={j} />
               }
               if (i === 0) {
-                return <HorizontalHeaderCel key={j} onClick={() => redirectToJob(cell)}>{cell}</HorizontalHeaderCel>
+                return (
+                  <HorizontalHeaderCel key={j}>
+                    <a href={getJobUrlById(cell)}>{cell}</a>
+                  </HorizontalHeaderCel>
+                )
               }
               if (j === 0) {
                 return <VerticalHeaderCel key={j}>{cell}</VerticalHeaderCel>

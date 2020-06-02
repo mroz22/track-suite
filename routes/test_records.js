@@ -79,4 +79,18 @@ router.delete('/:id', (req, res) => {
     });
 });
 
+router.delete('/', (req, res) => {
+  TestRecord.deleteMany()
+    .then((result) => {
+      res.json({
+        success: true,
+        msg: `It has been deleted.`,
+        result,
+      });
+    })
+    .catch((err) => {
+      res.status(404).json({ success: false, msg: 'Nothing to delete.' });
+    });
+});
+
 module.exports = router;
