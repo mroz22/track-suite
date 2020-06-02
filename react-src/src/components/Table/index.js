@@ -31,6 +31,7 @@ const HorizontalHeaderCel = styled(Cell)`
   text-overflow: ellipsis;
   overflow: hidden;
   margin-bottom: 8px;
+  cursor: pointer;
 `;
 
 const VerticalHeaderCel = styled(Cell)`
@@ -63,12 +64,21 @@ const Table = ({data}) => {
   const testNames = [];
   const testRuns = [];
   const branches = [];
+  const stages = [];
 
   const [branch, setBranch] = useState('');
+  const [stage, setStage] = useState('');
 
   data.forEach(record => {
     if (!branches.includes(record.branch)) {
       branches.push(record.branch);
+    }
+    if (record.stages) {
+      record.stages.forEach(stage => {
+        if (!stages.includes(stage)) {
+          stages.push(stage);
+        }
+      })
     }
     Object.entries(record.records).forEach(([name, value]) => {
       if (!testNames.includes(name)) {
@@ -89,7 +99,20 @@ const Table = ({data}) => {
     })
   ];
 
-  data.forEach(record => {
+  data
+  .filter(record => {
+    if (stage && record.stages) {
+      return record.stages.includes(stage);
+    }
+    return true;
+  })
+  .filter(record => {
+    if (branch && record.branch) {
+      return record.branch === branch;
+    }
+    return true;
+  })
+  .forEach(record => {
     const idIndex = testRuns.findIndex(t => t === record._id);
 
     testNames.forEach((testName, nameIndex) => {
@@ -109,9 +132,24 @@ const Table = ({data}) => {
   console.log('testNames', testNames);
   console.log('testRuns', testRuns);
   
+  const redirectToJob = (id) => {
+    const record = data.find(r => r._id === id);
+    if (record && record.jobUrl) {
+      window.location = record.jobUrl;
+    }
+  }
+
   return (
     <React.Fragment>
       <Select onChange={(e, { value }) => setBranch(value)} placeholder='Select branch' options={branches.map(b => ({key: b, value: b, text: b}))} />
+      <Select onChange={(e, { value }) => setStage(value)} placeholder='Select stage' options={stages.map(b => ({key: b, value: b, text: b}))} />
+      
+      <div>
+        {branch}
+      </div>
+      <div>
+        {stage}
+      </div>
       <Wrapper>
 
       {
@@ -122,7 +160,7 @@ const Table = ({data}) => {
                 return <CornerHeaderCel key={j} />
               }
               if (i === 0) {
-                return <HorizontalHeaderCel key={j}>{cell}</HorizontalHeaderCel>
+                return <HorizontalHeaderCel key={j} onClick={() => redirectToJob(cell)}>{cell}</HorizontalHeaderCel>
               }
               if (j === 0) {
                 return <VerticalHeaderCel key={j}>{cell}</VerticalHeaderCel>
