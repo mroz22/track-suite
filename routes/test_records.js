@@ -65,7 +65,6 @@ router.post('/', postLimiter, (req, res) => {
 
 // DELETE
 router.delete('/:id', (req, res) => {
-
   TestRecord.findByIdAndRemove(req.params.id)
     .then((result) => {
       res.json({

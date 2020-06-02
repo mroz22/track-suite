@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Select, Button, Divider, Header, Icon, Grid, Segment } from 'semantic-ui-react'
+import { Select, Button, Divider, Header, Grid } from 'semantic-ui-react'
 
 const DIMENSION_UNIT = 25;
-const DIMENSION_RATIO_HORIZONTAL = 4;
+const DIMENSION_RATIO_HORIZONTAL = 3;
 const DIMENSION_RATIO_VERTICAL = 8;
 
 const Wrapper = styled.div`
@@ -57,6 +57,11 @@ const Box = styled.a`
     if (props.value === 'failed') return 'red';
     return 'gray';
   }};
+
+  &:hover {
+    width: 95%;
+    height: 95%;
+  }
 `;
 
 const Table = ({data, dropDataFn}) => {
