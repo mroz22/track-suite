@@ -1,0 +1,18 @@
+{
+  "name": "track-suite",
+  "version": "0.1.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "1.19.0",
+    "cors": "2.8.5",
+    "express": "4.17.1",
+    "express-rate-limit": "5.1.3",
+    "mongoose": "5.9.13"
+  }
+}
