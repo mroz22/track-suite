@@ -5,7 +5,8 @@ const TestRecordSchema = new mongoose.Schema({
   //   type: String,
   //   required: [true, 'project is required.'],
   // },
-  record: {
+  jobUrl: String,
+  records: {
     type: mongoose.Schema.Types.Mixed,
   },
 });

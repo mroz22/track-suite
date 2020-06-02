@@ -31,7 +31,8 @@ const HorizontalHeaderCel = styled(Cell)`
 
 const VerticalHeaderCel = styled(Cell)`
   width: ${DIMENSION_UNIT * 4}px;
-  height: ${DIMENSION_UNIT}px
+  height: ${DIMENSION_UNIT}px;
+  text-align: right;
 `;
 
 const CornerHeaderCel = styled.div`
