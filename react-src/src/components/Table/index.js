@@ -45,7 +45,7 @@ const CornerHeaderCel = styled.div`
   height: ${DIMENSION_UNIT * DIMENSION_RATIO}px;;
 `;
 
-const Box = styled.div`
+const Box = styled.a`
   margin: auto;
   width: 80%;
   height: 80%;
@@ -174,7 +174,7 @@ const Table = ({data, dropDataFn}) => {
               if (j === 0) {
                 return <VerticalHeaderCel key={j}>{cell}</VerticalHeaderCel>
               }
-              return <Cell key={j}><Box value={cell} /></Cell>
+              return <Cell key={j}><Box value={cell} href={`${matrix[0][i]}/artifacts/browse/packages/integration-tests/projects/suite-web/videos/${matrix[j]}`} /></Cell>
             })}
           </Row>
         ))

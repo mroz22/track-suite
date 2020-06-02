@@ -4,6 +4,9 @@ const TestRecordSchema = new mongoose.Schema({
   jobUrl: {
     type: String,
   },
+  jobId: {
+    type: String,
+  },
   branch: {
     type: String,
   },
