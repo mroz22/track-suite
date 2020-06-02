@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Select, Button, Divider, Header, Icon } from 'semantic-ui-react'
+import { Select, Button, Divider, Header, Icon, Grid, Segment } from 'semantic-ui-react'
 
 const DIMENSION_UNIT = 25;
-const DIMENSION_RATIO = 8;
+const DIMENSION_RATIO_HORIZONTAL = 4;
+const DIMENSION_RATIO_VERTICAL = 8;
 
 const Wrapper = styled.div`
   display: flex;
@@ -27,22 +28,22 @@ const Row = styled.div`
 const HorizontalHeaderCel = styled(Cell)`
   writing-mode:vertical-rl;
   width: ${DIMENSION_UNIT}px;
-  height: ${DIMENSION_UNIT * DIMENSION_RATIO}px;
+  height: ${DIMENSION_UNIT * DIMENSION_RATIO_HORIZONTAL}px;
   text-overflow: ellipsis;
   overflow: hidden;
   margin-bottom: 8px;
 `;
 
 const VerticalHeaderCel = styled(Cell)`
-  width: ${DIMENSION_UNIT * DIMENSION_RATIO}px;
+  width: ${DIMENSION_UNIT * DIMENSION_RATIO_VERTICAL}px;
   height: ${DIMENSION_UNIT}px;
   text-align: right;
   text-overflow: ellipsis;
 `;
 
 const CornerHeaderCel = styled.div`
-  width: ${DIMENSION_UNIT * DIMENSION_RATIO}px;;
-  height: ${DIMENSION_UNIT * DIMENSION_RATIO}px;;
+  width: ${DIMENSION_UNIT * DIMENSION_RATIO_VERTICAL}px;;
+  height: ${DIMENSION_UNIT * DIMENSION_RATIO_HORIZONTAL}px;;
 `;
 
 const Box = styled.a`
@@ -101,8 +102,8 @@ const Table = ({data, dropDataFn}) => {
       if (!testNames.includes(name)) {
         testNames.push(name);
       }
-      if (!testRuns.includes(record._id)) {
-        testRuns.push(record._id);
+      if (!testRuns.includes(record.jobId)) {
+        testRuns.push(record.jobId);
       }
     });
   })
@@ -118,7 +119,7 @@ const Table = ({data, dropDataFn}) => {
 
   filteredData
   .forEach(record => {
-    const idIndex = testRuns.findIndex(t => t === record._id);
+    const idIndex = testRuns.findIndex(t => t === record.jobId);
 
     testNames.forEach((testName, nameIndex) => {
       const recordForTestName = Object.entries(record.records).find(([name, value]) => {
@@ -134,7 +135,7 @@ const Table = ({data, dropDataFn}) => {
   });
 
   const getJobUrlById = (id) => {
-    const record = data.find(r => r._id === id);
+    const record = data.find(r => r.jobId === id);
     if (record && record.jobUrl) {
       return record.jobUrl;
     }
@@ -142,39 +143,53 @@ const Table = ({data, dropDataFn}) => {
 
   return (
     <React.Fragment>
-      <div>
-
-      <Select onChange={(e, { value }) => setBranch(value)} placeholder='Select branch' options={branches.map(b => ({key: b, value: b, text: b}))} />
-      <Select onChange={(e, { value }) => setStage(value)} placeholder='Select stage' options={stages.map(b => ({key: b, value: b, text: b}))} />
-      <Button negative onClick={() => dropDataFn()}>Drop data</Button>
-      </div>
+       <Grid columns="4">
+        <Grid.Column stretched>
+          <Select onChange={(e, { value }) => setBranch(value)} placeholder='Select branch' options={branches.map(b => ({key: b, value: b, text: b}))} />
+        </Grid.Column>
+        <Grid.Column stretched>
+          <Select onChange={(e, { value }) => setStage(value)} placeholder='Select stage' options={stages.map(b => ({key: b, value: b, text: b}))} />
+        </Grid.Column>
+        <Grid.Column />
+        <Grid.Column stretched>
+          <Button negative onClick={() => dropDataFn()}>Drop data</Button>
+        </Grid.Column>
+      </Grid>
 
       <Divider horizontal>
         <Header as='h4'>
-          <Icon name='tag' />
           Tracks
         </Header>
       </Divider>
 
       <Wrapper>
       {
-        matrix.map((row, i) => (
+        matrix.map((rows, i) => (
           <Row key={i}>
-            {row.map((cell, j) => {
+            {rows.map((cell, j) => {
               if (!cell) {
                 return <CornerHeaderCel key={j} />
               }
               if (i === 0) {
                 return (
                   <HorizontalHeaderCel key={j}>
-                    <a href={getJobUrlById(cell)}>{cell}</a>
+                    <a target="_blank" href={getJobUrlById(cell)}>{cell}</a>
                   </HorizontalHeaderCel>
                 )
               }
               if (j === 0) {
                 return <VerticalHeaderCel key={j}>{cell}</VerticalHeaderCel>
               }
-              return <Cell key={j}><Box value={cell} href={`${matrix[0][i]}/artifacts/browse/packages/integration-tests/projects/suite-web/videos/${matrix[j]}`} /></Cell>
+
+              return (
+                <Cell key={j}>
+                  <Box 
+                    value={cell}
+                    target="_blank"
+                    href={`${getJobUrlById(matrix[0][j])}//artifacts/file/packages/integration-tests/projects/suite-web/videos/${matrix[i][0]}.test.ts.mp4`} 
+                    />
+                </Cell>
+              )
             })}
           </Row>
         ))
