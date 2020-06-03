@@ -28,22 +28,9 @@ const App = () => {
     });
   }
   
-  const dropData = () => {
-    console.log('dropdata cliccked');
-    axios.delete(`${server}/api/test-records/`)
-      .then(() => {
-        setData([]);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
   useEffect(() => {
     fetchData();
   }, [])
-  
-  
 
   return (
     <div>
@@ -57,7 +44,6 @@ const App = () => {
         {!loading && (
           <Table
           data={data}
-          dropDataFn={dropData}
         />
         )}
         {(!data || !data.length) && !loading && (

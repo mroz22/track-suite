@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Select, Divider, Header, Grid } from 'semantic-ui-react'
+import { Select, Divider, Header, Grid, Popup } from 'semantic-ui-react'
 
 const DIMENSION_UNIT = 25;
 const DIMENSION_RATIO_HORIZONTAL = 3;
@@ -59,12 +59,12 @@ const Box = styled.a`
   }};
 
   &:hover {
-    width: 95%;
-    height: 95%;
+    width: 96%;
+    height: 96%;
   }
 `;
 
-const Table = ({data, dropDataFn}) => {
+const Table = ({data}) => {
 
   if (!data || data.length === 0) return null;
 
@@ -115,11 +115,13 @@ const Table = ({data, dropDataFn}) => {
     
   const matrix = [
     [undefined, ...testRuns],
-    ...testNames.map((name, i) => {
-      return [
-        name,
-      ]
-    })
+    ...testNames.map((name) => {
+      return [ name ]
+      
+    }),
+    [undefined, ...testRuns.map((jobId) => {
+      return data.find(r => r.jobId === jobId).commitMessage 
+    })]
   ];
 
   filteredData
@@ -167,28 +169,35 @@ const Table = ({data, dropDataFn}) => {
       <Wrapper>
       {
         matrix.map((rows, i) => (
+
           <Row key={i}>
             {rows.map((cell, j) => {
-              if (!cell) {
+              if (i === 0 && j === 0) {
                 return <CornerHeaderCel key={j} />
               }
               if (i === 0) {
                 return (
+                  
                   <HorizontalHeaderCel key={j}>
-                    <a target="_blank" href={getJobUrlById(cell)}>{cell}</a>
+                  <Popup
+                    content={data.find(r => r.jobId === cell).commitMessage}
+                    trigger={
+                      <a target="_blank" href={getJobUrlById(cell)}>{cell}</a>
+                  }>
+                  </Popup>
                   </HorizontalHeaderCel>
                 )
               }
               if (j === 0) {
                 return <VerticalHeaderCel key={j}>{cell}</VerticalHeaderCel>
               }
-
+    
               return (
                 <Cell key={j}>
                   <Box 
                     value={cell}
                     target="_blank"
-                    href={`${getJobUrlById(matrix[0][j])}//artifacts/file/packages/integration-tests/projects/suite-web/videos/${matrix[i][0]}.test.ts.mp4`} 
+                    href={`${getJobUrlById(matrix[0][j])}/artifacts/file/packages/integration-tests/projects/suite-web/videos/${matrix[i][0]}.test.ts.mp4`} 
                     />
                 </Cell>
               )
@@ -197,7 +206,6 @@ const Table = ({data, dropDataFn}) => {
         ))
       }
       </Wrapper>
-
     </React.Fragment>
   )
 }
