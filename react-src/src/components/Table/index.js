@@ -117,11 +117,7 @@ const Table = ({data}) => {
     [undefined, ...testRuns],
     ...testNames.map((name) => {
       return [ name ]
-      
     }),
-    [undefined, ...testRuns.map((jobId) => {
-      return data.find(r => r.jobId === jobId).commitMessage 
-    })]
   ];
 
   filteredData
