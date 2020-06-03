@@ -15,17 +15,6 @@ const postLimiter = new RateLimit({
   }
 });
 
-// READ (ONE)
-router.get('/:id', (req, res) => {
-  TestRecord.findById(req.params.id)
-    .then((result) => {
-      res.json(result);
-    })
-    .catch((err) => {
-      res.status(404).json({ success: false, msg: `No such TestRecord.` });
-    });
-});
-
 // READ (ALL)
 router.get('/', (req, res) => {
   console.log('read all');
@@ -42,11 +31,8 @@ router.get('/', (req, res) => {
 
 // CREATE
 router.post('/', postLimiter, (req, res) => {
-  console.log('post', req.body);
   // Validate the age
   let newRecord = new TestRecord(req.body);
-  console.log(newRecord);
-
   newRecord.save()
     .then((result) => {
       res.json({
@@ -65,22 +51,23 @@ router.post('/', postLimiter, (req, res) => {
 });
 
 // DELETE
-router.delete('/:id', (req, res) => {
-  TestRecord.findByIdAndRemove(req.params.id)
-    .then((result) => {
-      res.json({
-        success: true,
-        msg: `It has been deleted.`,
-        result,
-      });
-    })
-    .catch((err) => {
-      res.status(404).json({ success: false, msg: 'Nothing to delete.' });
-    });
-});
+// router.delete('/:id', (req, res) => {
+//   TestRecord.findByIdAndRemove(req.params.id)
+//     .then((result) => {
+//       res.json({
+//         success: true,
+//         msg: `It has been deleted.`,
+//         result,
+//       });
+//     })
+//     .catch((err) => {
+//       res.status(404).json({ success: false, msg: 'Nothing to delete.' });
+//     });
+// });
 
 router.delete('/', (req, res) => {
-  TestRecord.deleteMany()
+  console.log('delete');
+  TestRecord.deleteMany({})
     .then((result) => {
       res.json({
         success: true,
