@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Select, Button, Divider, Header, Grid } from 'semantic-ui-react'
+import { Select, Divider, Header, Grid } from 'semantic-ui-react'
 
 const DIMENSION_UNIT = 25;
 const DIMENSION_RATIO_HORIZONTAL = 3;
@@ -10,7 +10,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 20px;
-`
+`;
 
 const Cell = styled.div`
   display: flex;
@@ -156,9 +156,6 @@ const Table = ({data, dropDataFn}) => {
           <Select onChange={(e, { value }) => setStage(value)} placeholder='Select stage' options={stages.map(b => ({key: b, value: b, text: b}))} />
         </Grid.Column>
         <Grid.Column />
-        <Grid.Column stretched>
-          <Button negative onClick={() => dropDataFn()}>Drop data</Button>
-        </Grid.Column>
       </Grid>
 
       <Divider horizontal>
