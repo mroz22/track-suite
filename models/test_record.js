@@ -18,7 +18,7 @@ const TestRecordSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.Mixed,
   },
 }, {
-   capped: { size: 1000000, max: 200, autoIndexId: true }
+   capped: { size: 2000000, max: 200, autoIndexId: true }
 });
 
 const TestRecord = module.exports = mongoose.model('test_record', TestRecordSchema);
