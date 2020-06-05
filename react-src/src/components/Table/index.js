@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Select, Divider, Header, Grid, Popup } from 'semantic-ui-react'
+import { Select, Divider, Header, Grid, Popup, Container } from 'semantic-ui-react'
 
 const DIMENSION_UNIT = 25;
 const DIMENSION_RATIO_HORIZONTAL = 3;
@@ -10,14 +10,15 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 20px;
+  max-width: 90vw;
+  overflow-x: auto;
 `;
 
 const Cell = styled.div`
   display: flex;
   flex-direction: column;
-  width: ${DIMENSION_UNIT}px;
-  height: ${DIMENSION_UNIT}px;
-  padding: 4px;
+  min-width: ${DIMENSION_UNIT}px;
+  min-height: ${DIMENSION_UNIT}px;
 `;
 
 const Row = styled.div`
@@ -37,19 +38,21 @@ const HorizontalHeaderCel = styled(Cell)`
 const VerticalHeaderCel = styled(Cell)`
   width: ${DIMENSION_UNIT * DIMENSION_RATIO_VERTICAL}px;
   height: ${DIMENSION_UNIT}px;
+  min-width: ${DIMENSION_UNIT * DIMENSION_RATIO_VERTICAL}px;
   text-align: right;
   text-overflow: ellipsis;
 `;
 
 const CornerHeaderCel = styled.div`
-  width: ${DIMENSION_UNIT * DIMENSION_RATIO_VERTICAL}px;;
-  height: ${DIMENSION_UNIT * DIMENSION_RATIO_HORIZONTAL}px;;
+  width: ${DIMENSION_UNIT * DIMENSION_RATIO_VERTICAL}px;
+  height: ${DIMENSION_UNIT * DIMENSION_RATIO_HORIZONTAL}px;
+  min-width: ${DIMENSION_UNIT * DIMENSION_RATIO_VERTICAL}px;
 `;
 
 const Box = styled.a`
   margin: auto;
-  width: 80%;
-  height: 80%;
+  width: 60%;
+  height: 60%;
   border-radius: 15%;
   background-color: ${(props) => {
     if (props.value === 'success') return 'green';
@@ -59,8 +62,8 @@ const Box = styled.a`
   }};
 
   &:hover {
-    width: 96%;
-    height: 96%;
+    width: 84%;
+    height: 84%;
   }
 `;
 
@@ -146,15 +149,17 @@ const Table = ({data}) => {
 
   return (
     <React.Fragment>
-       <Grid columns="4">
-        <Grid.Column stretched>
-          <Select onChange={(e, { value }) => setBranch(value)} placeholder='Select branch' options={branches.map(b => ({key: b, value: b, text: b}))} />
-        </Grid.Column>
-        <Grid.Column stretched>
-          <Select onChange={(e, { value }) => setStage(value)} placeholder='Select stage' options={stages.map(b => ({key: b, value: b, text: b}))} />
-        </Grid.Column>
-        <Grid.Column />
-      </Grid>
+      <Container>
+        <Grid columns="4">
+          <Grid.Column stretched>
+            <Select onChange={(e, { value }) => setBranch(value)} placeholder='Select branch' options={branches.map(b => ({key: b, value: b, text: b}))} />
+          </Grid.Column>
+          <Grid.Column stretched>
+            <Select onChange={(e, { value }) => setStage(value)} placeholder='Select stage' options={stages.map(b => ({key: b, value: b, text: b}))} />
+          </Grid.Column>
+          <Grid.Column />
+        </Grid>
+      </Container>
 
       <Divider horizontal>
         <Header as='h4'>
@@ -175,12 +180,12 @@ const Table = ({data}) => {
                 return (
                   
                   <HorizontalHeaderCel key={j}>
-                  <Popup
-                    content={data.find(r => r.jobId === cell).commitMessage}
-                    trigger={
-                      <a target="_blank" href={getJobUrlById(cell)}>{cell}</a>
-                  }>
-                  </Popup>
+                    <Popup
+                      content={data.find(r => r.jobId === cell).commitMessage}
+                      trigger={
+                        <a target="_blank" href={getJobUrlById(cell)}>{cell}</a>
+                    }>
+                    </Popup>
                   </HorizontalHeaderCel>
                 )
               }
@@ -189,12 +194,19 @@ const Table = ({data}) => {
               }
     
               return (
+
                 <Cell key={j}>
-                  <Box 
-                    value={cell}
-                    target="_blank"
-                    href={`${getJobUrlById(matrix[0][j])}/artifacts/file/packages/integration-tests/projects/suite-web/videos/${matrix[i][0]}.test.ts.mp4`} 
-                    />
+                  <Popup
+                      content={matrix[i][0]}
+                      trigger={
+                        (<Box 
+                          value={cell}
+                          target="_blank"
+                          href={`${getJobUrlById(matrix[0][j])}/artifacts/file/packages/integration-tests/projects/suite-web/videos/${matrix[i][0]}.test.ts.mp4`} 
+                          />)
+                    }>
+                    </Popup>
+                  
                 </Cell>
               )
             })}

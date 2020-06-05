@@ -40,7 +40,7 @@ const App = () => {
           <h1 className='App-intro'>=== TRACK SUITE ===</h1>
         </div>
       </div>
-      <Container>
+      <div>
         {!loading && (
           <Table
           data={data}
@@ -53,7 +53,7 @@ const App = () => {
           </Container>
         )}
         
-      </Container>
+      </div>
       <br/>
     </div>
   );
