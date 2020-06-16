@@ -1,0 +1,18 @@
+<!-- completely unrelated to this project. copy to public folder after build to enable oauth for trezor
+suite labeling -->
+
+<html>
+  <head></head>
+  <body>
+    <script>
+      alert('ouath');
+      if (window.ipcRenderer) {
+        window.ipcRenderer.send('oauth-receiver', window.location.hash);
+      }
+      if (window.opener) {
+        window.opener.postMessage(window.location.hash, window.location.origin);
+      }  
+      window.close();
+    </script>
+  </body>
+</html>
