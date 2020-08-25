@@ -5,11 +5,13 @@ suite labeling -->
   <head></head>
   <body>
     <script>
+      // dropbox sends data in window.location.hash, google in window.location.search
+      var message = window.location.search ? window.location.search: window.location.hash;
       if (window.ipcRenderer) {
-        window.ipcRenderer.send('oauth-receiver', window.location.hash);
+        window.ipcRenderer.send('oauth-receiver', message);
       }
       if (window.opener) {
-        window.opener.postMessage(window.location.hash, '*');
+        window.opener.postMessage(message, window.location.origin);
       }  
       window.close();
     </script>
