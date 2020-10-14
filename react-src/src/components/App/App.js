@@ -46,6 +46,9 @@ const App = () => {
           data={data}
         />
         )}
+        
+        {loading && 'loading...'}
+
         {(!data || !data.length) && !loading && (
           <Container textAlign="center">
             <Header>No data here :( You may still enjoy these crunchy fried frog legs</Header>
