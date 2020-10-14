@@ -10,6 +10,7 @@ import './App.css';
 
 const App = () => {
   const server = process.env.REACT_APP_API_URL || '';
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
