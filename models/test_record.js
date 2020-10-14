@@ -13,12 +13,18 @@ const TestRecordSchema = new mongoose.Schema({
   commitMessage: {
     type: String,
   },
+  commitSha: {
+    type: String,
+  },
   stage: [String],
   records: {
     type: mongoose.Schema.Types.Mixed,
   },
+  duration: {
+    type: Number,
+  }
 }, {
-   capped: { size: 2000000, max: 200, autoIndexId: true }
+   capped: { size: 2000000, max: 400, autoIndexId: true }
 });
 
 const TestRecord = module.exports = mongoose.model('test_record', TestRecordSchema);

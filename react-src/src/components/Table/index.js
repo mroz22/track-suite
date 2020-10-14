@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { Select, Divider, Header, Grid, Popup, Container } from 'semantic-ui-react'
+import React, { useState } from "react";
+import styled from "styled-components";
+import {
+  Select,
+  Divider,
+  Header,
+  Grid,
+  Popup,
+  Container,
+} from "semantic-ui-react";
 
 const DIMENSION_UNIT = 25;
 const DIMENSION_RATIO_HORIZONTAL = 3;
@@ -27,7 +34,7 @@ const Row = styled.div`
 `;
 
 const HorizontalHeaderCel = styled(Cell)`
-  writing-mode:vertical-rl;
+  writing-mode: vertical-rl;
   width: ${DIMENSION_UNIT}px;
   height: ${DIMENSION_UNIT * DIMENSION_RATIO_HORIZONTAL}px;
   text-overflow: ellipsis;
@@ -55,10 +62,11 @@ const Box = styled.a`
   height: 60%;
   border-radius: 15%;
   background-color: ${(props) => {
-    if (props.value === 'success') return 'green';
-    if (props.value === 'retried') return 'orange';
-    if (props.value === 'failed') return 'red';
-    return 'gray';
+    if (props.value === "success") return "green";
+    if (props.value === "retried") return "orange";
+    if (props.value === "failed") return "red";
+    if (props.value === "skipped") return "blue";
+    return "gray";
   }};
 
   &:hover {
@@ -67,8 +75,7 @@ const Box = styled.a`
   }
 `;
 
-const Table = ({data}) => {
-
+const Table = ({ data }) => {
   if (!data || data.length === 0) return null;
 
   const testNames = [];
@@ -76,36 +83,37 @@ const Table = ({data}) => {
   const branches = [];
   const stages = [];
 
-  const [branch, setBranch] = useState('');
-  const [stage, setStage] = useState('');
+  const [branch, setBranch] = useState("");
+  const [stage, setStage] = useState("");
 
-  data.forEach(record => {
+  data.forEach((record) => {
     if (!branches.includes(record.branch)) {
       branches.push(record.branch);
     }
     if (record.stage) {
-      record.stage.forEach(stage => {
+      record.stage.forEach((stage) => {
         if (!stages.includes(stage)) {
           stages.push(stage);
         }
-      })
+      });
     }
-  })
+  });
 
-  const filteredData = data.filter(record => {
+  const filteredData = data
+    .filter((record) => {
       if (stage && record.stage) {
         return record.stage.includes(stage);
       }
       return true;
     })
-    .filter(record => {
+    .filter((record) => {
       if (branch && record.branch) {
         return record.branch === branch;
       }
       return true;
-    })
+    });
 
-  filteredData.forEach(record => {
+  filteredData.forEach((record) => {
     Object.entries(record.records).forEach(([name, value]) => {
       if (!testNames.includes(name)) {
         testNames.push(name);
@@ -114,108 +122,114 @@ const Table = ({data}) => {
         testRuns.push(record.jobId);
       }
     });
-  })
-    
+  });
+
   const matrix = [
     [undefined, ...testRuns],
     ...testNames.map((name) => {
-      return [ name ]
+      return [name];
     }),
   ];
 
-  filteredData
-  .forEach(record => {
-    const idIndex = testRuns.findIndex(t => t === record.jobId);
+  filteredData.forEach((record) => {
+    const idIndex = testRuns.findIndex((t) => t === record.jobId);
 
     testNames.forEach((testName, nameIndex) => {
-      const recordForTestName = Object.entries(record.records).find(([name, value]) => {
-        return name === testName;
-      });
+      const recordForTestName = Object.entries(record.records).find(
+        ([name, value]) => {
+          return name === testName;
+        }
+      );
       if (recordForTestName) {
-        matrix[nameIndex + 1][idIndex + 1] = recordForTestName[1];        
-      } 
-      else { 
-        matrix[nameIndex + 1][idIndex + 1] = '?';        
+        matrix[nameIndex + 1][idIndex + 1] = recordForTestName[1];
+      } else {
+        matrix[nameIndex + 1][idIndex + 1] = "?";
       }
     });
   });
 
   const getJobUrlById = (id) => {
-    const record = data.find(r => r.jobId === id);
+    const record = data.find((r) => r.jobId === id);
     if (record && record.jobUrl) {
       return record.jobUrl;
     }
-  }
+  };
 
   return (
     <React.Fragment>
       <Container>
         <Grid columns="4">
           <Grid.Column stretched>
-            <Select onChange={(e, { value }) => setBranch(value)} placeholder='Select branch' options={branches.map(b => ({key: b, value: b, text: b}))} />
+            <Select
+              onChange={(e, { value }) => setBranch(value)}
+              placeholder="Select branch"
+              options={branches.map((b) => ({ key: b, value: b, text: b }))}
+            />
           </Grid.Column>
           <Grid.Column stretched>
-            <Select onChange={(e, { value }) => setStage(value)} placeholder='Select stage' options={stages.map(b => ({key: b, value: b, text: b}))} />
+            <Select
+              onChange={(e, { value }) => setStage(value)}
+              placeholder="Select stage"
+              options={stages.map((b) => ({ key: b, value: b, text: b }))}
+            />
           </Grid.Column>
           <Grid.Column />
         </Grid>
       </Container>
 
       <Divider horizontal>
-        <Header as='h4'>
-          Tracks
-        </Header>
+        <Header as="h4">Tracks</Header>
       </Divider>
 
       <Wrapper>
-      {
-        matrix.map((rows, i) => (
-
+        {matrix.map((rows, i) => (
           <Row key={i}>
             {rows.map((cell, j) => {
               if (i === 0 && j === 0) {
-                return <CornerHeaderCel key={j} />
+                return <CornerHeaderCel key={j} />;
               }
               if (i === 0) {
                 return (
-                  
                   <HorizontalHeaderCel key={j}>
                     <Popup
-                      content={data.find(r => r.jobId === cell).commitMessage}
+                      content={data.find((r) => r.jobId === cell).commitMessage}
                       trigger={
-                        <a target="_blank" href={getJobUrlById(cell)}>{cell}</a>
-                    }>
-                    </Popup>
+                        <a target="_blank" href={getJobUrlById(cell)}>
+                          {cell}
+                        </a>
+                      }
+                    ></Popup>
                   </HorizontalHeaderCel>
-                )
+                );
               }
               if (j === 0) {
-                return <VerticalHeaderCel key={j}>{cell}</VerticalHeaderCel>
+                return <VerticalHeaderCel key={j}>{cell}</VerticalHeaderCel>;
               }
-    
-              return (
 
+              return (
                 <Cell key={j}>
                   <Popup
-                      content={matrix[i][0]}
-                      trigger={
-                        (<Box 
-                          value={cell}
-                          target="_blank"
-                          href={`${getJobUrlById(matrix[0][j])}/artifacts/file/packages/integration-tests/projects/suite-web/videos/${matrix[i][0]}.test.ts.mp4`} 
-                          />)
-                    }>
-                    </Popup>
-                  
+                    content={matrix[i][0]}
+                    trigger={
+                      <Box
+                        value={cell}
+                        target="_blank"
+                        href={`${getJobUrlById(
+                          matrix[0][j]
+                        )}/artifacts/file/packages/integration-tests/projects/suite-web/videos/${
+                          matrix[i][0]
+                        }.test.ts.mp4`}
+                      />
+                    }
+                  ></Popup>
                 </Cell>
-              )
+              );
             })}
           </Row>
-        ))
-      }
+        ))}
       </Wrapper>
     </React.Fragment>
-  )
-}
+  );
+};
 
 export default Table;
