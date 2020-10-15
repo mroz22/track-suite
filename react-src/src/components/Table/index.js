@@ -29,11 +29,6 @@ const Cell = styled.div`
   align-items: center;
 `;
 
-const Row = styled.div`
-  display: flex;
-  flex-direction: row;
-`;
-
 const Col = styled.div`
   display: flex;
   flex-direction: column;
@@ -46,6 +41,7 @@ const HorizontalHeaderCel = styled(Cell)`
   text-overflow: ellipsis;
   overflow: hidden;
   margin-bottom: 8px;
+  align-items: flex-end;
 `;
 
 const VerticalHeaderCel = styled(Cell)`
@@ -54,6 +50,8 @@ const VerticalHeaderCel = styled(Cell)`
   min-width: ${DIMENSION_UNIT * DIMENSION_RATIO_VERTICAL}px;
   text-align: right;
   text-overflow: ellipsis;
+  align-items: flex-end;
+  padding-right: ${DIMENSION_UNIT}px;
 `;
 
 const CornerHeaderCel = styled.div`
