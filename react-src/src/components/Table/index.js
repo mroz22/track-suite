@@ -315,11 +315,7 @@ const Table = ({ data }) => {
                           return (
                             <Popup
                               key={k}
-                              content={JSON.stringify(
-                                output[pipeline].stages[stage],
-                                null,
-                                2
-                              )}
+                              content={`"${record}" test on branch "${output[pipeline].stages[stage].branch}. runner: ${output[pipeline].stages[stage].runnerDescription}"`}
                               trigger={
                                 <Cell>
                                   <Box
