@@ -85,7 +85,7 @@ const Box = styled.a`
 const Table = ({ data }) => {
   if (!data || data.length === 0) return null;
 
-  console.log('incoming data', data);
+  console.log("incoming data", data);
 
   const [branch, setBranch] = useState("");
   const [stage, setStage] = useState("");
@@ -175,6 +175,7 @@ const Table = ({ data }) => {
       accumulator[record.commitSha] = {
         stages: {},
         branch: record.branch,
+        commitMessage: record.commitMessage,
       };
     }
 
@@ -222,7 +223,7 @@ const Table = ({ data }) => {
     }
   });
 
-  console.log('sorted data', output);
+  console.log("sorted data", output);
 
   const getDuration = (durationMs) => {
     if (!durationMs) return "?";
@@ -261,9 +262,14 @@ const Table = ({ data }) => {
           <div style={{ display: "flex" }}>
             <CornerHeaderCel />
             {Object.keys(output).map((pipeline, i) => (
-              <HorizontalHeaderCel key={i}>
-                {output[pipeline].branch} ({pipeline.substr(0, 6)})
-              </HorizontalHeaderCel>
+              <Popup
+                content={output[pipeline].commitMessage}
+                trigger={
+                  <HorizontalHeaderCel key={i}>
+                    {output[pipeline].branch} ({pipeline.substr(0, 6)})
+                  </HorizontalHeaderCel>
+                }
+              />
             ))}
           </div>
 
