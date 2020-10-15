@@ -266,7 +266,8 @@ const Table = ({ data }) => {
                 content={output[pipeline].commitMessage}
                 trigger={
                   <HorizontalHeaderCel key={i}>
-                    {output[pipeline].branch} ({pipeline.substr(0, 6)})
+                    {output[pipeline].branch}/${output[pipeline].commitMessage}{" "}
+                    ({pipeline.substr(0, 6)})
                   </HorizontalHeaderCel>
                 }
               />
@@ -314,7 +315,11 @@ const Table = ({ data }) => {
                           return (
                             <Popup
                               key={k}
-                              content={`"${record}" test on branch "${output[pipeline].stages[stage].branch}"`}
+                              content={JSON.stringify(
+                                output[pipeline].stages[stage],
+                                null,
+                                2
+                              )}
                               trigger={
                                 <Cell>
                                   <Box

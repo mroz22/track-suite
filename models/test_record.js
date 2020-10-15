@@ -27,6 +27,9 @@ const TestRecordSchema = new mongoose.Schema(
     pipelineUrl: {
       type: String,
     },
+    runnerDescription: {
+      type: String,
+    }
   },
   {
     capped: { size: 2000000, max: 200, autoIndexId: true },
