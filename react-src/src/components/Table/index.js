@@ -26,11 +26,18 @@ const Cell = styled.div`
   flex-direction: column;
   min-width: ${DIMENSION_UNIT}px;
   min-height: ${DIMENSION_UNIT}px;
+  align-items: center;
 `;
 
 const Row = styled.div`
   display: flex;
   flex-direction: row;
+`;
+
+const Col = styled.div`
+  display: flex;
+  flex-direction: column;
+  border: 1px dotted gray;
 `;
 
 const HorizontalHeaderCel = styled(Cell)`
@@ -58,8 +65,8 @@ const CornerHeaderCel = styled.div`
 
 const Box = styled.a`
   margin: auto;
-  width: 60%;
-  height: 60%;
+  width: ${DIMENSION_UNIT * 0.6}px;
+  height: ${DIMENSION_UNIT * 0.6}px;
   border-radius: 15%;
   background-color: ${(props) => {
     if (props.value === "success") return "green";
@@ -68,36 +75,57 @@ const Box = styled.a`
     if (props.value === "skipped") return "blue";
     return "gray";
   }};
+  transition: all 0.2s;
 
   &:hover {
-    width: 84%;
-    height: 84%;
+    width: ${DIMENSION_UNIT * 0.84}px;
+    height: ${DIMENSION_UNIT * 0.84}px;
   }
 `;
 
 const Table = ({ data }) => {
   if (!data || data.length === 0) return null;
 
-  const testNames = [];
-  const testRuns = [];
-  const branches = [];
-  const stages = [];
+  console.log(data);
 
   const [branch, setBranch] = useState("");
   const [stage, setStage] = useState("");
 
-  data.forEach((record) => {
-    if (!branches.includes(record.branch)) {
-      branches.push(record.branch);
+  const getAllBranches = () => {
+    const branches = [];
+    data.forEach((record) => {
+      if (!branches.includes(record.branch)) {
+        branches.push(record.branch);
+      }
+    });
+    return branches;
+  };
+
+  const getAllStages = () => {
+    const stages = [];
+    data.forEach((record) => {
+      if (!stages.includes(record.stage.join())) {
+        stages.push(record.stage.join());
+      }
+    });
+    return stages;
+  };
+
+  const testNames = [];
+  const testRuns = [];
+  const branches = getAllBranches();
+  const stages = getAllStages();
+
+  const allTestNamesPerStage = data.reduce((accumulator, record) => {
+    const stage = record.stage.join();
+    if (!accumulator[stage]) {
+      accumulator[stage] = [];
     }
-    if (record.stage) {
-      record.stage.forEach((stage) => {
-        if (!stages.includes(stage)) {
-          stages.push(stage);
-        }
-      });
-    }
-  });
+    accumulator[stage] = Array.from(
+      new Set([...accumulator[stage], ...Object.keys(record.records)])
+    );
+    return accumulator;
+  }, {});
 
   const filteredData = data
     .filter((record) => {
@@ -148,11 +176,72 @@ const Table = ({ data }) => {
     });
   });
 
+  let output = filteredData.reduce((accumulator, record) => {
+    if (!record.commitSha) return accumulator;
+
+    if (!accumulator[record.commitSha]) {
+      accumulator[record.commitSha] = {};
+    }
+
+    const stage = record.stage.join();
+    // ensure each stage has all tests
+    if (
+      Object.keys(record.records).length < allTestNamesPerStage[stage].length
+    ) {
+      Object.assign(
+        record.records,
+        allTestNamesPerStage[stage].reduce(
+          (o, key) => ({
+            [key]: "missing",
+            ...o,
+          }),
+          { ...record.records }
+        )
+      );
+    }
+
+    accumulator[record.commitSha][stage] = record;
+
+    return accumulator;
+  }, {});
+
+  Object.keys(output).forEach((commitSha) => {
+    if (Object.keys(output[commitSha]).length < stages.length) {
+      const missingStages = stages.filter(
+        (s) => !Object.keys(output[commitSha]).includes(s)
+      );
+      console.log("missing", missingStages);
+
+      const filledStages = missingStages.reduce((accumulator, s) => {
+        console.log("accumulator", accumulator);
+        accumulator[s] = {};
+        accumulator[s].records = allTestNamesPerStage[s].reduce(
+          (o, key) => ({
+            ...o,
+            [key]: "missing",
+          }),
+          {}
+        );
+        return accumulator;
+      }, {});
+
+      Object.assign(output[commitSha], filledStages);
+    }
+  });
+
+  console.log(output);
+
   const getJobUrlById = (id) => {
     const record = data.find((r) => r.jobId === id);
     if (record && record.jobUrl) {
       return record.jobUrl;
     }
+  };
+
+  const getDuration = (durationMs) => {
+    if (!durationMs) return "?";
+    const minutes = durationMs / (1000 * 60);
+    return Math.round(minutes * 10) / 10;
   };
 
   return (
@@ -182,51 +271,66 @@ const Table = ({ data }) => {
       </Divider>
 
       <Wrapper>
-        {matrix.map((rows, i) => (
-          <Row key={i}>
-            {rows.map((cell, j) => {
-              if (i === 0 && j === 0) {
-                return <CornerHeaderCel key={j} />;
-              }
-              if (i === 0) {
-                return (
-                  <HorizontalHeaderCel key={j}>
-                    <Popup
-                      content={data.find((r) => r.jobId === cell).commitMessage}
-                      trigger={
-                        <a target="_blank" href={getJobUrlById(cell)}>
-                          {cell}
-                        </a>
-                      }
-                    ></Popup>
-                  </HorizontalHeaderCel>
-                );
-              }
-              if (j === 0) {
-                return <VerticalHeaderCel key={j}>{cell}</VerticalHeaderCel>;
-              }
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex" }}>
+            <CornerHeaderCel />
+            {Object.keys(output).map((pipeline, i) => (
+              <HorizontalHeaderCel>{pipeline}</HorizontalHeaderCel>
+            ))}
+          </div>
 
-              return (
-                <Cell key={j}>
-                  <Popup
-                    content={matrix[i][0]}
-                    trigger={
-                      <Box
-                        value={cell}
-                        target="_blank"
-                        href={`${getJobUrlById(
-                          matrix[0][j]
-                        )}/artifacts/file/packages/integration-tests/projects/suite-web/videos/${
-                          matrix[i][0]
-                        }.test.ts.mp4`}
-                      />
-                    }
-                  ></Popup>
-                </Cell>
-              );
-            })}
-          </Row>
-        ))}
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            {Object.keys(output).map((pipeline, i) => (
+              <Col>
+                {Object.keys(output[pipeline]).map((stage, j) => {
+                  if (i === 0) {
+                    return (
+                      <div>
+                        <VerticalHeaderCel style={{ fontWeight: "bold" }}>
+                          {stage}
+                        </VerticalHeaderCel>
+                        {Object.keys(output[pipeline][stage].records).map(
+                          (record) => (
+                            <VerticalHeaderCel>{record}</VerticalHeaderCel>
+                          )
+                        )}
+                        <VerticalHeaderCel>Duration:</VerticalHeaderCel>
+                      </div>
+                    );
+                  }
+                })}
+              </Col>
+            ))}
+
+            {Object.keys(output).map((pipeline, i) => (
+              <Col>
+                {Object.keys(output[pipeline]).map((stage, j) => {
+                  return (
+                    <div>
+                      <Cell></Cell>
+                      {Object.keys(output[pipeline][stage].records).map(
+                        (record, k) => {
+                          return (
+                            <Cell key={k}>
+                              <Box
+                                value={output[pipeline][stage].records[record]}
+                                target="_blank"
+                                href={`${output[pipeline][stage].jobUrl}/artifacts/file/packages/integration-tests/projects/suite-web/videos/${record}.test.ts.mp4`}
+                              />
+                            </Cell>
+                          );
+                        }
+                      )}
+                      <Cell>
+                        {getDuration(output[pipeline][stage].duration)}
+                      </Cell>
+                    </div>
+                  );
+                })}
+              </Col>
+            ))}
+          </div>
+        </div>
       </Wrapper>
     </React.Fragment>
   );
