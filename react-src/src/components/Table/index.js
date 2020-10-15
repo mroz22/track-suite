@@ -263,11 +263,11 @@ const Table = ({ data }) => {
             <CornerHeaderCel />
             {Object.keys(output).map((pipeline, i) => (
               <Popup
-                content={output[pipeline].commitMessage}
+                content={`commitHash: ${pipeline}. commitMessage: ${output[pipeline].commitMessage}`}
                 trigger={
                   <HorizontalHeaderCel key={i}>
-                    {output[pipeline].branch}/${output[pipeline].commitMessage}{" "}
-                    ({pipeline.substr(0, 6)})
+                    {output[pipeline].branch.substr(0, 8)}/
+                    {output[pipeline].commitMessage.substr(0, 8)}{" "}
                   </HorizontalHeaderCel>
                 }
               />
