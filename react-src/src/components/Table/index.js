@@ -10,8 +10,8 @@ import {
 } from "semantic-ui-react";
 
 const DIMENSION_UNIT = 25;
-const DIMENSION_RATIO_HORIZONTAL = 3;
-const DIMENSION_RATIO_VERTICAL = 8;
+const DIMENSION_RATIO_HORIZONTAL = 12;
+const DIMENSION_RATIO_VERTICAL = 12;
 
 const Wrapper = styled.div`
   display: flex;
@@ -37,7 +37,6 @@ const Row = styled.div`
 const Col = styled.div`
   display: flex;
   flex-direction: column;
-  border: 1px dotted gray;
 `;
 
 const HorizontalHeaderCel = styled(Cell)`
@@ -86,7 +85,7 @@ const Box = styled.a`
 const Table = ({ data }) => {
   if (!data || data.length === 0) return null;
 
-  console.log(data);
+  console.log('incoming data', data);
 
   const [branch, setBranch] = useState("");
   const [stage, setStage] = useState("");
@@ -152,35 +151,31 @@ const Table = ({ data }) => {
     });
   });
 
-  const matrix = [
-    [undefined, ...testRuns],
-    ...testNames.map((name) => {
-      return [name];
-    }),
-  ];
+  // filteredData.forEach((record) => {
+  //   const idIndex = testRuns.findIndex((t) => t === record.jobId);
 
-  filteredData.forEach((record) => {
-    const idIndex = testRuns.findIndex((t) => t === record.jobId);
-
-    testNames.forEach((testName, nameIndex) => {
-      const recordForTestName = Object.entries(record.records).find(
-        ([name, value]) => {
-          return name === testName;
-        }
-      );
-      if (recordForTestName) {
-        matrix[nameIndex + 1][idIndex + 1] = recordForTestName[1];
-      } else {
-        matrix[nameIndex + 1][idIndex + 1] = "?";
-      }
-    });
-  });
+  //   testNames.forEach((testName, nameIndex) => {
+  //     const recordForTestName = Object.entries(record.records).find(
+  //       ([name, value]) => {
+  //         return name === testName;
+  //       }
+  //     );
+  //     if (recordForTestName) {
+  //       matrix[nameIndex + 1][idIndex + 1] = recordForTestName[1];
+  //     } else {
+  //       matrix[nameIndex + 1][idIndex + 1] = "?";
+  //     }
+  //   });
+  // });
 
   let output = filteredData.reduce((accumulator, record) => {
     if (!record.commitSha) return accumulator;
 
     if (!accumulator[record.commitSha]) {
-      accumulator[record.commitSha] = {};
+      accumulator[record.commitSha] = {
+        stages: {},
+        branch: record.branch,
+      };
     }
 
     const stage = record.stage.join();
@@ -200,20 +195,18 @@ const Table = ({ data }) => {
       );
     }
 
-    accumulator[record.commitSha][stage] = record;
+    accumulator[record.commitSha].stages[stage] = record;
 
     return accumulator;
   }, {});
 
   Object.keys(output).forEach((commitSha) => {
-    if (Object.keys(output[commitSha]).length < stages.length) {
+    if (Object.keys(output[commitSha].stages).length < stages.length) {
       const missingStages = stages.filter(
-        (s) => !Object.keys(output[commitSha]).includes(s)
+        (s) => !Object.keys(output[commitSha].stages).includes(s)
       );
-      console.log("missing", missingStages);
 
       const filledStages = missingStages.reduce((accumulator, s) => {
-        console.log("accumulator", accumulator);
         accumulator[s] = {};
         accumulator[s].records = allTestNamesPerStage[s].reduce(
           (o, key) => ({
@@ -225,18 +218,11 @@ const Table = ({ data }) => {
         return accumulator;
       }, {});
 
-      Object.assign(output[commitSha], filledStages);
+      Object.assign(output[commitSha].stages, filledStages);
     }
   });
 
-  console.log(output);
-
-  const getJobUrlById = (id) => {
-    const record = data.find((r) => r.jobId === id);
-    if (record && record.jobUrl) {
-      return record.jobUrl;
-    }
-  };
+  console.log('sorted data', output);
 
   const getDuration = (durationMs) => {
     if (!durationMs) return "?";
@@ -275,58 +261,76 @@ const Table = ({ data }) => {
           <div style={{ display: "flex" }}>
             <CornerHeaderCel />
             {Object.keys(output).map((pipeline, i) => (
-              <HorizontalHeaderCel>{pipeline}</HorizontalHeaderCel>
+              <HorizontalHeaderCel key={i}>
+                {output[pipeline].branch} ({pipeline.substr(0, 6)})
+              </HorizontalHeaderCel>
             ))}
           </div>
 
           <div style={{ display: "flex", flexDirection: "row" }}>
             {Object.keys(output).map((pipeline, i) => (
-              <Col>
-                {Object.keys(output[pipeline]).map((stage, j) => {
-                  if (i === 0) {
-                    return (
-                      <div>
-                        <VerticalHeaderCel style={{ fontWeight: "bold" }}>
-                          {stage}
-                        </VerticalHeaderCel>
-                        {Object.keys(output[pipeline][stage].records).map(
-                          (record) => (
-                            <VerticalHeaderCel>{record}</VerticalHeaderCel>
-                          )
-                        )}
-                        <VerticalHeaderCel>Duration:</VerticalHeaderCel>
-                      </div>
-                    );
-                  }
-                })}
+              <Col key={i}>
+                {Object.keys(output[pipeline].stages)
+                  .sort()
+                  .map((stage, j) => {
+                    if (i === 0) {
+                      return (
+                        <div key={j}>
+                          <VerticalHeaderCel style={{ fontWeight: "bold" }}>
+                            {stage}
+                          </VerticalHeaderCel>
+                          {Object.keys(
+                            output[pipeline].stages[stage].records
+                          ).map((record) => (
+                            <VerticalHeaderCel key={record}>
+                              {record}
+                            </VerticalHeaderCel>
+                          ))}
+                          <VerticalHeaderCel>Duration:</VerticalHeaderCel>
+                        </div>
+                      );
+                    }
+                  })}
               </Col>
             ))}
 
             {Object.keys(output).map((pipeline, i) => (
-              <Col>
-                {Object.keys(output[pipeline]).map((stage, j) => {
-                  return (
-                    <div>
-                      <Cell></Cell>
-                      {Object.keys(output[pipeline][stage].records).map(
-                        (record, k) => {
+              <Col key={i}>
+                {Object.keys(output[pipeline].stages)
+                  .sort()
+                  .map((stage, j) => {
+                    return (
+                      <div key={j}>
+                        <Cell></Cell>
+                        {Object.keys(
+                          output[pipeline].stages[stage].records
+                        ).map((record, k) => {
                           return (
-                            <Cell key={k}>
-                              <Box
-                                value={output[pipeline][stage].records[record]}
-                                target="_blank"
-                                href={`${output[pipeline][stage].jobUrl}/artifacts/file/packages/integration-tests/projects/suite-web/videos/${record}.test.ts.mp4`}
-                              />
-                            </Cell>
+                            <Popup
+                              key={k}
+                              content={`"${record}" test on branch "${output[pipeline].stages[stage].branch}"`}
+                              trigger={
+                                <Cell>
+                                  <Box
+                                    value={
+                                      output[pipeline].stages[stage].records[
+                                        record
+                                      ]
+                                    }
+                                    target="_blank"
+                                    href={`${output[pipeline].stages[stage].jobUrl}/artifacts/file/packages/integration-tests/projects/suite-web/videos/${record}.test.ts.mp4`}
+                                  />
+                                </Cell>
+                              }
+                            />
                           );
-                        }
-                      )}
-                      <Cell>
-                        {getDuration(output[pipeline][stage].duration)}
-                      </Cell>
-                    </div>
-                  );
-                })}
+                        })}
+                        <Cell>
+                          {getDuration(output[pipeline].stages[stage].duration)}
+                        </Cell>
+                      </div>
+                    );
+                  })}
               </Col>
             ))}
           </div>
