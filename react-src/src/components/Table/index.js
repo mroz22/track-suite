@@ -43,6 +43,7 @@ const HorizontalHeaderCel = styled(Cell)`
   overflow: hidden;
   margin-bottom: 8px;
   align-items: flex-end;
+  word-break: break-all;
 `;
 
 const VerticalHeaderCel = styled(Cell)`
@@ -245,6 +246,7 @@ const Table = ({ data }) => {
             <CornerHeaderCel />
             {Object.keys(output).map((pipeline, i) => (
               <Popup
+                key={i}
                 content={`commitHash: ${pipeline}. commitMessage: ${output[pipeline].commitMessage}`}
                 trigger={
                   <HorizontalHeaderCel key={i}>
@@ -269,7 +271,7 @@ const Table = ({ data }) => {
                           </VerticalHeaderCel>
                           {Object.keys(
                             output[pipeline].stages[stage].records
-                          ).map((record) => (
+                          ).sort().map((record) => (
                             <VerticalHeaderCel key={record}>
                               {record}
                             </VerticalHeaderCel>
@@ -292,7 +294,7 @@ const Table = ({ data }) => {
                         <Cell></Cell>
                         {Object.keys(
                           output[pipeline].stages[stage].records
-                        ).map((record, k) => {
+                        ).sort().map((record, k) => {
                           return (
                             <Popup
                               key={k}
