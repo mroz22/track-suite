@@ -37,7 +37,8 @@ const Col = styled.div`
 const HorizontalHeaderCel = styled(Cell)`
   writing-mode: vertical-rl;
   width: ${DIMENSION_UNIT}px;
-  height: ${DIMENSION_UNIT * DIMENSION_RATIO_HORIZONTAL}px;
+  max-height: ${DIMENSION_UNIT * DIMENSION_RATIO_HORIZONTAL}px;
+  height: auto;
   text-overflow: ellipsis;
   overflow: hidden;
   margin-bottom: 8px;
@@ -56,7 +57,7 @@ const VerticalHeaderCel = styled(Cell)`
 
 const CornerHeaderCel = styled.div`
   width: ${DIMENSION_UNIT * DIMENSION_RATIO_VERTICAL}px;
-  height: ${DIMENSION_UNIT * DIMENSION_RATIO_HORIZONTAL}px;
+  max-height: ${DIMENSION_UNIT * DIMENSION_RATIO_HORIZONTAL}px;
   min-width: ${DIMENSION_UNIT * DIMENSION_RATIO_VERTICAL}px;
 `;
 
@@ -148,23 +149,6 @@ const Table = ({ data }) => {
       }
     });
   });
-
-  // filteredData.forEach((record) => {
-  //   const idIndex = testRuns.findIndex((t) => t === record.jobId);
-
-  //   testNames.forEach((testName, nameIndex) => {
-  //     const recordForTestName = Object.entries(record.records).find(
-  //       ([name, value]) => {
-  //         return name === testName;
-  //       }
-  //     );
-  //     if (recordForTestName) {
-  //       matrix[nameIndex + 1][idIndex + 1] = recordForTestName[1];
-  //     } else {
-  //       matrix[nameIndex + 1][idIndex + 1] = "?";
-  //     }
-  //   });
-  // });
 
   let output = filteredData.reduce((accumulator, record) => {
     if (!record.commitSha) return accumulator;
@@ -264,8 +248,7 @@ const Table = ({ data }) => {
                 content={`commitHash: ${pipeline}. commitMessage: ${output[pipeline].commitMessage}`}
                 trigger={
                   <HorizontalHeaderCel key={i}>
-                    {output[pipeline].branch.substr(0, 8)}/
-                    {output[pipeline].commitMessage.substr(0, 8)}{" "}
+                    {output[pipeline].commitMessage}
                   </HorizontalHeaderCel>
                 }
               />

@@ -8,6 +8,8 @@ import logo from "../../tracksuite.jpg";
 import legs from "../../fried-frog-legs.jpg";
 import "./App.css";
 
+// import data from '../Table/index.test';
+
 const App = () => {
   const server = process.env.REACT_APP_API_URL || "";
 
