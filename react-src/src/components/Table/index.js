@@ -42,8 +42,8 @@ const HorizontalHeaderCel = styled(Cell)`
   text-overflow: ellipsis;
   overflow: hidden;
   margin-bottom: 8px;
-  align-items: flex-end;
-  word-break: break-all;
+  white-space: no-wrap;
+  display: inline;
 `;
 
 const VerticalHeaderCel = styled(Cell)`
