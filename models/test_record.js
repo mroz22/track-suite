@@ -29,7 +29,10 @@ const TestRecordSchema = new mongoose.Schema(
     },
     runnerDescription: {
       type: String,
-    }
+    },
+    screenshots: {
+      type: mongoose.Schema.Types.Mixed,
+    },
   },
   {
     capped: { size: 2000000, max: 200, autoIndexId: true },
