@@ -22,6 +22,9 @@ const Detail = ({ data }) => {
               <div>{screenshot.name}</div>
               <img
                 style={{
+                  display: 'block',
+                  marginLeft: 'auto',
+                  marginRight: 'auto',
                   border: "4px dotted pink",
                 }}
                 src={`${data.jobUrl}${screenshot.path.replace(
