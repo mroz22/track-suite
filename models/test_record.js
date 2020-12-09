@@ -33,6 +33,9 @@ const TestRecordSchema = new mongoose.Schema(
     screenshots: {
       type: [mongoose.Schema.Types.Mixed],
     },
+    tests: {
+      type: [mongoose.Schema.Types.Mixed],
+    }
   },
   {
     capped: { size: 2000000, max: 200, autoIndexId: true },

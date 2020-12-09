@@ -1,13 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import {
-  Select,
-  Divider,
-  Header,
-  Grid,
-  Popup,
-  Container,
-} from "semantic-ui-react";
+import { Popup } from "semantic-ui-react";
+import { Link } from "react-router-dom";
 
 const DIMENSION_UNIT = 25;
 const DIMENSION_RATIO_HORIZONTAL = 12;
@@ -83,131 +77,7 @@ const Box = styled.a`
 `;
 
 const Table = ({ data }) => {
-  if (!data || data.length === 0) return null;
-
-  console.log("incoming data", data);
-
-  const [branch, setBranch] = useState("");
-  const [stage, setStage] = useState("");
-
-  const getAllBranches = () => {
-    const branches = [];
-    data.forEach((record) => {
-      if (!branches.includes(record.branch)) {
-        branches.push(record.branch);
-      }
-    });
-    return branches;
-  };
-
-  const getAllStages = () => {
-    const stages = [];
-    data.forEach((record) => {
-      if (!stages.includes(record.stage.join())) {
-        stages.push(record.stage.join());
-      }
-    });
-    return stages;
-  };
-
-  const testNames = [];
-  const testRuns = [];
-  const branches = getAllBranches();
-  const stages = getAllStages();
-
-  const allTestNamesPerStage = data.reduce((accumulator, record) => {
-    const stage = record.stage.join();
-    if (!accumulator[stage]) {
-      accumulator[stage] = [];
-    }
-    accumulator[stage] = Array.from(
-      new Set([...accumulator[stage], ...Object.keys(record.records)])
-    );
-    return accumulator;
-  }, {});
-
-  const filteredData = data
-    .filter((record) => {
-      if (stage && record.stage) {
-        return record.stage.includes(stage);
-      }
-      return true;
-    })
-    .filter((record) => {
-      if (branch && record.branch) {
-        return record.branch === branch;
-      }
-      return true;
-    });
-
-  filteredData.forEach((record) => {
-    Object.entries(record.records).forEach(([name, value]) => {
-      if (!testNames.includes(name)) {
-        testNames.push(name);
-      }
-      if (!testRuns.includes(record.jobId)) {
-        testRuns.push(record.jobId);
-      }
-    });
-  });
-
-  let output = filteredData.reduce((accumulator, record) => {
-    if (!record.commitSha) return accumulator;
-
-    if (!accumulator[record.commitSha]) {
-      accumulator[record.commitSha] = {
-        stages: {},
-        branch: record.branch,
-        commitMessage: record.commitMessage,
-      };
-    }
-
-    const stage = record.stage.join();
-    // ensure each stage has all tests
-    if (
-      Object.keys(record.records).length < allTestNamesPerStage[stage].length
-    ) {
-      Object.assign(
-        record.records,
-        allTestNamesPerStage[stage].reduce(
-          (o, key) => ({
-            [key]: "missing",
-            ...o,
-          }),
-          { ...record.records }
-        )
-      );
-    }
-
-    accumulator[record.commitSha].stages[stage] = record;
-
-    return accumulator;
-  }, {});
-
-  Object.keys(output).forEach((commitSha) => {
-    if (Object.keys(output[commitSha].stages).length < stages.length) {
-      const missingStages = stages.filter(
-        (s) => !Object.keys(output[commitSha].stages).includes(s)
-      );
-
-      const filledStages = missingStages.reduce((accumulator, s) => {
-        accumulator[s] = {};
-        accumulator[s].records = allTestNamesPerStage[s].reduce(
-          (o, key) => ({
-            ...o,
-            [key]: "missing",
-          }),
-          {}
-        );
-        return accumulator;
-      }, {});
-
-      Object.assign(output[commitSha].stages, filledStages);
-    }
-  });
-
-  console.log("sorted data", output);
-
+  console.log("table", data);
   const getDuration = (durationMs) => {
     if (!durationMs) return "?";
     const minutes = durationMs / (1000 * 60);
@@ -216,41 +86,19 @@ const Table = ({ data }) => {
 
   return (
     <React.Fragment>
-      <Container>
-        <Grid columns="4">
-          <Grid.Column stretched>
-            <Select
-              onChange={(e, { value }) => setBranch(value)}
-              placeholder="Select branch"
-              options={branches.map((b) => ({ key: b, value: b, text: b }))}
-            />
-          </Grid.Column>
-          <Grid.Column stretched>
-            <Select
-              onChange={(e, { value }) => setStage(value)}
-              placeholder="Select stage"
-              options={stages.map((b) => ({ key: b, value: b, text: b }))}
-            />
-          </Grid.Column>
-          <Grid.Column />
-        </Grid>
-      </Container>
-
-      <Divider horizontal>
-        <Header as="h4">Tracks</Header>
-      </Divider>
-
       <Wrapper>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ display: "flex" }}>
             <CornerHeaderCel />
-            {Object.keys(output).map((pipeline, i) => (
+            {Object.keys(data).map((pipeline, i) => (
               <Popup
                 key={i}
-                content={`commitHash: ${pipeline}. commitMessage: ${output[pipeline].commitMessage}`}
+                content={`commitHash: ${pipeline}. commitMessage: ${data[pipeline].commitMessage}`}
                 trigger={
                   <HorizontalHeaderCel key={i}>
-                    {output[pipeline].commitMessage}
+                    <Link to={`${data[pipeline].branch}/${pipeline}`}>
+                      {data[pipeline].commitMessage}
+                    </Link>
                   </HorizontalHeaderCel>
                 }
               />
@@ -258,9 +106,9 @@ const Table = ({ data }) => {
           </div>
 
           <div style={{ display: "flex", flexDirection: "row" }}>
-            {Object.keys(output).map((pipeline, i) => (
+            {Object.keys(data).map((pipeline, i) => (
               <Col key={i}>
-                {Object.keys(output[pipeline].stages)
+                {Object.keys(data[pipeline].stages)
                   .sort()
                   .map((stage, j) => {
                     if (i === 0) {
@@ -269,13 +117,13 @@ const Table = ({ data }) => {
                           <VerticalHeaderCel style={{ fontWeight: "bold" }}>
                             {stage}
                           </VerticalHeaderCel>
-                          {Object.keys(
-                            output[pipeline].stages[stage].records
-                          ).sort().map((record) => (
-                            <VerticalHeaderCel key={record}>
-                              {record}
-                            </VerticalHeaderCel>
-                          ))}
+                          {Object.keys(data[pipeline].stages[stage].records)
+                            .sort()
+                            .map((record) => (
+                              <VerticalHeaderCel key={record}>
+                                {record}
+                              </VerticalHeaderCel>
+                            ))}
                           <VerticalHeaderCel>Duration:</VerticalHeaderCel>
                         </div>
                       );
@@ -284,39 +132,39 @@ const Table = ({ data }) => {
               </Col>
             ))}
 
-            {Object.keys(output).map((pipeline, i) => (
+            {Object.keys(data).map((pipeline, i) => (
               <Col key={i}>
-                {Object.keys(output[pipeline].stages)
+                {Object.keys(data[pipeline].stages)
                   .sort()
                   .map((stage, j) => {
                     return (
                       <div key={j}>
                         <Cell></Cell>
-                        {Object.keys(
-                          output[pipeline].stages[stage].records
-                        ).sort().map((record, k) => {
-                          return (
-                            <Popup
-                              key={k}
-                              content={`"${record}" test on branch "${output[pipeline].stages[stage].branch}. runner: ${output[pipeline].stages[stage].runnerDescription}"`}
-                              trigger={
-                                <Cell>
-                                  <Box
-                                    value={
-                                      output[pipeline].stages[stage].records[
-                                        record
-                                      ]
-                                    }
-                                    target="_blank"
-                                    href={`${output[pipeline].stages[stage].jobUrl}/artifacts/file/packages/integration-tests/projects/suite-web/videos/${record}.test.ts.mp4`}
-                                  />
-                                </Cell>
-                              }
-                            />
-                          );
-                        })}
+                        {Object.keys(data[pipeline].stages[stage].records)
+                          .sort()
+                          .map((record, k) => {
+                            return (
+                              <Popup
+                                key={k}
+                                content={`"${record}" test on branch "${data[pipeline].stages[stage].branch}. runner: ${data[pipeline].stages[stage].runnerDescription}"`}
+                                trigger={
+                                  <Cell>
+                                    <Box
+                                      value={
+                                        data[pipeline].stages[stage].records[
+                                          record
+                                        ]
+                                      }
+                                      target="_blank"
+                                      href={`${data[pipeline].stages[stage].jobUrl}/artifacts/file/packages/integration-tests/projects/suite-web/videos/${record}.test.ts.mp4`}
+                                    />
+                                  </Cell>
+                                }
+                              />
+                            );
+                          })}
                         <Cell>
-                          {getDuration(output[pipeline].stages[stage].duration)}
+                          {getDuration(data[pipeline].stages[stage].duration)}
                         </Cell>
                       </div>
                     );
@@ -326,6 +174,21 @@ const Table = ({ data }) => {
           </div>
         </div>
       </Wrapper>
+      {/* <div>
+        https://gitlab.com/satoshilabs/trezor/trezor-suite/-/jobs/899939339/artifacts/raw/packages/integration-tests/projects/suite-web/snapshots/suite/connecting-devices.test.ts/__diff_data__/seedless.diff.png
+        "https://gitlab.com/satoshilabs/trezor/trezor-suite/-/jobs/899928052"
+        jobUrl + /artifacts/raw + path.replace('/trezor-suite', '/raw')
+        {data
+          .find((d) => d.screenshots && d.screenshots.length)
+          .screenshots.map((s) => {
+            return (
+              <div>
+                <div>const:</div>
+                <div>path: {JSON.stringify(s, null, 2).path}</div>
+              </div>
+            );
+          })}
+      </div> */}
     </React.Fragment>
   );
 };
