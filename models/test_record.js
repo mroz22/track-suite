@@ -31,7 +31,7 @@ const TestRecordSchema = new mongoose.Schema(
       type: String,
     },
     screenshots: {
-      type: mongoose.Schema.Types.Mixed,
+      type: [mongoose.Schema.Types.Mixed],
     },
   },
   {
