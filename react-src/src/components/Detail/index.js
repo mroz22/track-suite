@@ -81,7 +81,10 @@ const Detail = ({ data }) => {
                               display: "block",
                               marginLeft: "auto",
                               marginRight: "auto",
-                              border: "4px dotted pink",
+                              marginTop: '8px',
+                              marginBottom: '8px',
+                              maxWidth: '100vw',
+                              border: "4px dotted gray",
                             }}
                             src={`${data.jobUrl}${screenshot.path.replace(
                               "trezor-suite",

@@ -30,9 +30,6 @@ const TestRecordSchema = new mongoose.Schema(
     runnerDescription: {
       type: String,
     },
-    screenshots: {
-      type: [mongoose.Schema.Types.Mixed],
-    },
     tests: {
       type: [mongoose.Schema.Types.Mixed],
     }
