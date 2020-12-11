@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
-  BrowserRouter,
+  HashRouter,
   Switch,
   Route,
   useHistory,
@@ -8,7 +8,6 @@ import {
   useLocation,
   matchPath,
   Link,
-  useParams,
 } from "react-router-dom";
 import axios from "axios";
 import { Select, Divider, Header, Grid, Container } from "semantic-ui-react";
@@ -203,7 +202,7 @@ export default () => {
   return (
     <div>
       {!loading && (
-        <BrowserRouter>
+        <HashRouter>
           <Container>
             <Grid columns="4">
               <Grid.Column stretched>
@@ -230,7 +229,7 @@ export default () => {
               <Table data={sortedData} />
             </Route>
           </Switch>
-        </BrowserRouter>
+        </HashRouter>
       )}
 
       {loading && "loading..."}
