@@ -81,8 +81,6 @@ const Detail = ({ data }) => {
                               display: "block",
                               marginLeft: "auto",
                               marginRight: "auto",
-                              marginTop: '8px',
-                              marginBottom: '8px',
                               maxWidth: '100vw',
                               border: "4px dotted gray",
                             }}
