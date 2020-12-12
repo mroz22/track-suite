@@ -67,7 +67,8 @@ const Detail = ({ data }) => {
                   {test.attempts.map((attempt) => (
                     <div
                       style={{
-                        backgroundColor: stateToColor(attempt.state),
+                        paddingLeft: '8px',
+                        borderLeft: `10px solid ${stateToColor(attempt.state)}`,
                       }}
                     >
                       <h3 id={test.title.join(">>")}>
@@ -81,7 +82,7 @@ const Detail = ({ data }) => {
                               display: "block",
                               marginLeft: "auto",
                               marginRight: "auto",
-                              maxWidth: '100vw',
+                              maxWidth: "100vw",
                               border: "4px dotted gray",
                             }}
                             src={`${data.jobUrl}${screenshot.path.replace(
