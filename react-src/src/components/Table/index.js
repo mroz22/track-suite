@@ -143,6 +143,7 @@ const Table = ({ data }) => {
                         {Object.keys(data[pipeline].stages[stage].records)
                           .sort()
                           .map((record, k) => {
+                            const [, lastNameSegment] = record.split('/');
                             return (
                               <Popup
                                 key={k}
@@ -156,7 +157,7 @@ const Table = ({ data }) => {
                                         ]
                                       }
                                       target="_blank"
-                                      href={`${data[pipeline].stages[stage].jobUrl}/artifacts/file/packages/suite-web/e2e/videos/${record}.test.ts.mp4`}
+                                      href={`${data[pipeline].stages[stage].jobUrl}/artifacts/file/packages/suite-web/e2e/videos/${lastNameSegment}.test.ts.mp4`}
                                     />
                                   </Cell>
                                 }
