@@ -25,7 +25,6 @@ const Detail = ({ data }) => {
   };
 
   // todo: add link to video
-  // href={`${data[pipeline].stages[stage].jobUrl}/artifacts/file/packages/integration-tests/projects/suite-web/videos/${record}.test.ts.mp4`}
 
   return (
     <div>

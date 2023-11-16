@@ -156,7 +156,7 @@ const Table = ({ data }) => {
                                         ]
                                       }
                                       target="_blank"
-                                      href={`${data[pipeline].stages[stage].jobUrl}/artifacts/file/packages/integration-tests/projects/suite-web/videos/${record}.test.ts.mp4`}
+                                      href={`${data[pipeline].stages[stage].jobUrl}/artifacts/file/packages/suite-web/e2e/videos/${record}.test.ts.mp4`}
                                     />
                                   </Cell>
                                 }
