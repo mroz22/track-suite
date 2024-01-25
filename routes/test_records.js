@@ -7,7 +7,6 @@ const TestRecord = require('../models/test_record');
 router.get('/', (req, res) => {
   TestRecord.find({})
     .then((result) => {
-      console.log(result);
       res.json(result);
     })
     .catch((err) => {
@@ -18,7 +17,6 @@ router.get('/', (req, res) => {
 
 // CREATE
 router.post('/', (req, res) => {
-  console.log(req.body);
   let newRecord = new TestRecord(req.body);
   newRecord.save()
     .then((result) => {
