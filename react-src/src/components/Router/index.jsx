@@ -87,7 +87,7 @@ export default () => {
 
   const fetchBranches = () => {
     setLoading(true);
-    axios.get(`${server}/api/branches`).then((response) => {
+    axios.get(`${server}/api/test-records/branches`).then((response) => {
       console.log('get branches', response);
     })
     .catch((err) => {
