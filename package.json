@@ -17,5 +17,6 @@
   },
   "engines": {
     "yarn": "3.x"
-  }
+  },
+  "packageManager": "yarn@4.1.0"
 }
