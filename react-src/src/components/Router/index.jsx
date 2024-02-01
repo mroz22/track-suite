@@ -30,20 +30,17 @@ const Menu = withRouter(({ branches, onSelectBranch }) => {
     if (path) {
       onSelectBranch(path.params.branch.trim());
       setBranch(path.params.branch.trim());
-    } else {
-      onSelectBranch("");
-      setBranch("");
-    }
-  }, [location]);
+    } 
+  }, []);
 
   return (
     <div>
       <Select
         value={branch}
         onChange={(e, { value }) => {
+          setBranch(value);
           onSelectBranch(value);
-          console.log(history);
-          history.push("/" + value);
+          history.push("/" + value.replace('/', '-'));
         }}
         placeholder="Select branch"
         options={branches.map((b) => ({
@@ -79,7 +76,6 @@ export default () => {
   const fetchBranches = () => {
     setLoading(true);
     return axios.get(`${server}/api/test-records/branches`).then((response) => {
-      console.log('get branches', response);
       setBranches(response.data);
     })
     .catch((err) => {
@@ -92,7 +88,7 @@ export default () => {
 
   const fetchData = (b) => {
     return axios
-      .get(`${server}/api/test-records/?branch=${b || 'develop'}`)
+      .get(encodeURI(`${server}/api/test-records/?branch=${b || 'develop'}`))
       .then((response) => {
         setData(response.data);
     
@@ -114,11 +110,9 @@ export default () => {
   }, [branch])
 
   useEffect(() => {
-    
     const testNames = [];
     const testRuns = [];
     const stages = getAllStages();
-    console.log("branch", branch.length);
 
     const allTestNamesPerStage = data.reduce((accumulator, record) => {
       const stage = record.stage.join();

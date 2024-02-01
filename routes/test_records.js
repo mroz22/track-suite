@@ -18,14 +18,15 @@ router.get('/', (req, res) => {
 });
 
 router.get('/branches', (req, res) => {
-  TestRecord.distinct('branch', function (err, result) {
-    if (err) {
-      console.log(err);
-      return
-    };
+  TestRecord.distinct('branch').exec().then(result => {
     res.json(result);
-  })
+  }).catch(err => {
+    console.log(err);
+    res.status(500).json({ success: false, msg: `Something went wrong. ${err}` });
+  }) 
 })
+
+
 
 // CREATE
 router.post('/', (req, res) => {
