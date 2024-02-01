@@ -27,6 +27,8 @@ const Menu = withRouter(({ branches, onSelectBranch }) => {
       path: "/:branch",
     });
 
+    console.log("path", path);
+
     if (path) {
       onSelectBranch(path.params.branch.trim());
       setBranch(path.params.branch.trim());

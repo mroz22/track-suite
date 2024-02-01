@@ -30,7 +30,7 @@ router.get('/branches', (req, res) => {
 
 // CREATE
 router.post('/', (req, res) => {
-  let newRecord = new TestRecord(req.body);
+  let newRecord = new TestRecord({ ...req.body, branch: req.body.branch.replace('/', '-')});
   newRecord.save()
     .then((result) => {
       res.json({
