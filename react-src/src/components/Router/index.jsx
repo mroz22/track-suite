@@ -52,7 +52,6 @@ const Menu = withRouter(({ branches, onSelectBranch }) => {
           text: b,
         }))}
       />
-      {branch && <Link to="/">clear</Link>}
     </div>
   );
 });
