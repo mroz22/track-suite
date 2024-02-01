@@ -88,7 +88,7 @@ export default () => {
   const fetchData = () => {
     setLoading(true);
     axios
-      .get(`${server}/api/test-records/`)
+      .get(`${server}/api/test-records/?branch=${branch}`)
       .then((response) => {
         setData(response.data);
       })

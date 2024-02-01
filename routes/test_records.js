@@ -5,7 +5,8 @@ const TestRecord = require('../models/test_record');
 
 // READ (ALL)
 router.get('/', (req, res) => {
-  TestRecord.find({})
+  const { branch } = req.query;
+  TestRecord.find({ branch })
     .then((result) => {
       res.json(result);
     })
