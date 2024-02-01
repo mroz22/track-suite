@@ -61,19 +61,11 @@ export default () => {
   const server = process.env.REACT_APP_API_URL || "";
 
   const [data, setData] = useState([]);
+  const [branches, setBranches] = useState([]);
   const [sortedData, setSortedData] = useState({});
   const [loading, setLoading] = useState(false);
   const [branch, setBranch] = useState("");
 
-  const getAllBranches = () => {
-    const branches = [];
-    data.forEach((record) => {
-      if (!branches.includes(record.branch)) {
-        branches.push(record.branch);
-      }
-    });
-    return branches;
-  };
 
   const getAllStages = () => {
     const stages = [];
@@ -87,8 +79,9 @@ export default () => {
 
   const fetchBranches = () => {
     setLoading(true);
-    axios.get(`${server}/api/test-records/branches`).then((response) => {
+    return axios.get(`${server}/api/test-records/branches`).then((response) => {
       console.log('get branches', response);
+      setBranches(response.data);
     })
     .catch((err) => {
       console.log(err);
@@ -99,7 +92,7 @@ export default () => {
   };
 
   const fetchData = () => {
-    axios
+    return axios
       .get(`${server}/api/test-records/?branch=${branch}`)
       .then((response) => {
         setData(response.data);
@@ -115,10 +108,14 @@ export default () => {
 
   useEffect(() => {
     fetchBranches();
-    fetchData();
   }, []);
 
   useEffect(() => {
+    fetchData();
+  }, [branch])
+
+  useEffect(() => {
+    
     const testNames = [];
     const testRuns = [];
     const stages = getAllStages();
@@ -221,7 +218,7 @@ export default () => {
             <Grid columns="4">
               <Grid.Column stretched>
                 <Menu
-                  branches={getAllBranches()}
+                  branches={branches}
                   onSelectBranch={(value) => setBranch(value)}
                 />
               </Grid.Column>
