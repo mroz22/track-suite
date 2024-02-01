@@ -5,6 +5,7 @@ const TestRecord = require('../models/test_record');
 
 // READ (ALL)
 router.get('/', (req, res) => {
+ 
   const { branch } = req.query;
   TestRecord.find({ branch })
     .then((result) => {
@@ -15,6 +16,16 @@ router.get('/', (req, res) => {
       res.status(500).json({ success: false, msg: `Something went wrong. ${err}` });
     });
 });
+
+router.get('/branches', (req, res) => {
+  TestRecord.distinct('branch', function (err, result) {
+    if (err) {
+      console.log(err);
+      return
+    };
+    res.json(result);
+  })
+})
 
 // CREATE
 router.post('/', (req, res) => {

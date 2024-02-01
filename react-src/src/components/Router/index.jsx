@@ -85,12 +85,25 @@ export default () => {
     return stages;
   };
 
-  const fetchData = () => {
+  const fetchBranches = () => {
     setLoading(true);
+    axios.get(`${server}/api/branches`).then((response) => {
+      console.log('get branches', response);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+  };
+
+  const fetchData = () => {
     axios
       .get(`${server}/api/test-records/?branch=${branch}`)
       .then((response) => {
         setData(response.data);
+    
       })
       .catch((err) => {
         console.log(err);
@@ -101,6 +114,7 @@ export default () => {
   };
 
   useEffect(() => {
+    fetchBranches();
     fetchData();
   }, []);
 
