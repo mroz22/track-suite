@@ -64,7 +64,7 @@ export default () => {
   const [branches, setBranches] = useState([]);
   const [sortedData, setSortedData] = useState({});
   const [loading, setLoading] = useState(false);
-  const [branch, setBranch] = useState("");
+  const [branch, setBranch] = useState("develop");
 
 
   const getAllStages = () => {
@@ -91,9 +91,9 @@ export default () => {
     });
   };
 
-  const fetchData = () => {
+  const fetchData = (b) => {
     return axios
-      .get(`${server}/api/test-records/?branch=${branch}`)
+      .get(`${server}/api/test-records/?branch=${b || 'develop'}`)
       .then((response) => {
         setData(response.data);
     
@@ -111,7 +111,7 @@ export default () => {
   }, []);
 
   useEffect(() => {
-    fetchData();
+    fetchData(branch);
   }, [branch])
 
   useEffect(() => {
