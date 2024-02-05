@@ -35,7 +35,7 @@ const TestRecordSchema = new mongoose.Schema(
     }
   },
   {
-    capped: { size: 2000000, max: 1400, autoIndexId: true },
+    capped: { size: 20000000, max: 1400, autoIndexId: true },
   }
 );
 
