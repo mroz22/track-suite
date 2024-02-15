@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Popup } from "semantic-ui-react";
 import { Link } from "react-router-dom";
+import { useData } from "../../hooks/useData";
 
 const DIMENSION_UNIT = 25;
 const DIMENSION_RATIO_HORIZONTAL = 12;
@@ -48,6 +49,8 @@ const VerticalHeaderCel = styled(Cell)`
   text-overflow: ellipsis;
   align-items: flex-end;
   padding-right: ${DIMENSION_UNIT}px;
+  flex-direction: row;
+  justify-content: end;
 `;
 
 const CornerHeaderCel = styled.div`
@@ -76,8 +79,8 @@ const Box = styled.a`
   }
 `;
 
-const Table = ({ data }) => {
-  console.log("table", data);
+const Table = ({ branches }) => {
+  const { data, stats } = useData({ branches });
   const getDuration = (durationMs) => {
     if (!durationMs) return "?";
     const minutes = durationMs / (1000 * 60);
@@ -93,12 +96,17 @@ const Table = ({ data }) => {
             {Object.keys(data).map((pipeline, i) => (
               <Popup
                 key={i}
-                content={`commitHash: ${pipeline}. commitMessage: ${data[pipeline].commitMessage}`}
+                content={
+                  <div>
+                    <div>{pipeline}.</div>
+                    <div>{data[pipeline].commitMessage}</div>
+                  </div>
+                }
                 trigger={
                   <HorizontalHeaderCel key={i}>
-                    <Link to={`${data[pipeline].branch}/${pipeline}`}>
-                      {data[pipeline].commitMessage}
-                    </Link>
+                    {/* <Link to={`${data[pipeline].branch}/${pipeline}`}> */}
+                    {data[pipeline].commitMessage}
+                    {/* </Link> */}
                   </HorizontalHeaderCel>
                 }
               />
@@ -121,7 +129,14 @@ const Table = ({ data }) => {
                             .sort()
                             .map((record) => (
                               <VerticalHeaderCel key={record}>
-                                {record}
+                                <div>{record} </div>
+                                <div style={{ width: "32px" }}>
+                                  {Math.round(
+                                    100 *
+                                      (stats[record].success /
+                                        stats[record].total)
+                                  )}
+                                </div>
                               </VerticalHeaderCel>
                             ))}
                           <VerticalHeaderCel>Duration:</VerticalHeaderCel>
@@ -143,7 +158,7 @@ const Table = ({ data }) => {
                         {Object.keys(data[pipeline].stages[stage].records)
                           .sort()
                           .map((record, k) => {
-                            const [, lastNameSegment] = record.split('/');
+                            const [, lastNameSegment] = record.split("/");
                             return (
                               <Popup
                                 key={k}
