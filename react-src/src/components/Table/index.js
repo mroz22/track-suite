@@ -82,12 +82,21 @@ const Box = styled.a`
 `;
 
 const Table = ({ branches }) => {
-  const { data, stats } = useData({ branches });
+  const { data, stats, loadingData } = useData({ branches });
   const getDuration = (durationMs) => {
     if (!durationMs) return "?";
     const minutes = durationMs / (1000 * 60);
     return Math.round(minutes * 10) / 10;
   };
+
+  if (loadingData)
+    return (
+      <Wrapper>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          Loading...
+        </div>
+      </Wrapper>
+    );
 
   return (
     <React.Fragment>
