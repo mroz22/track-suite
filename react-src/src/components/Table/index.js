@@ -22,6 +22,7 @@ const Cell = styled.div`
   min-width: ${DIMENSION_UNIT}px;
   min-height: ${DIMENSION_UNIT}px;
   align-items: center;
+  font-size: 11px;
 `;
 
 const Col = styled.div`
@@ -39,6 +40,7 @@ const HorizontalHeaderCel = styled(Cell)`
   margin-bottom: 8px;
   white-space: no-wrap;
   display: inline;
+  font-size: 11px;
 `;
 
 const VerticalHeaderCel = styled(Cell)`
@@ -158,11 +160,10 @@ const Table = ({ branches }) => {
                         {Object.keys(data[pipeline].stages[stage].records)
                           .sort()
                           .map((record, k) => {
-                            const [, lastNameSegment] = record.split("/");
                             return (
                               <Popup
                                 key={k}
-                                content={`"${record}" test on branch "${data[pipeline].stages[stage].branch}. runner: ${data[pipeline].stages[stage].runnerDescription}"`}
+                                content={`"${record}" test on branch "${data[pipeline].stages[stage].branch}.`}
                                 trigger={
                                   <Cell>
                                     <Box
@@ -172,7 +173,7 @@ const Table = ({ branches }) => {
                                         ]
                                       }
                                       target="_blank"
-                                      href={`${data[pipeline].stages[stage].jobUrl}/artifacts/file/packages/suite-web/e2e/videos/${lastNameSegment}.test.ts.mp4`}
+                                      href={`${data[pipeline].stages[stage].jobUrl}`}
                                     />
                                   </Cell>
                                 }
